@@ -39,3 +39,20 @@ GET
   - status: ERROR
   - data: pesan kesalahan
 
+UPLOAD
+* TUJUAN: untuk memasukan file ke server dari pihak client dengan file dalam parameter
+* PARAMETER:
+  - PARAMETER1: nama file
+* RESULT:
+- BERHASIL:
+  - status: OK
+  - data_namafile: nama file yang diunggah
+  - data_file: isi file yang diunggah
+- GAGAL:
+  - status: ERROR
+  - data: pesan kesalahan
+
+
+
+
+
