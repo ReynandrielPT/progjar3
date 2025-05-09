@@ -2,8 +2,9 @@ import socket
 import json
 import base64
 import logging
+import os
 
-server_address=('0.0.0.0',7777)
+server_address = ('0.0.0.0', 7777)
 
 def send_command(command_str=""):
     global server_address
@@ -35,7 +36,6 @@ def send_command(command_str=""):
         logging.warning("error during data receiving")
         return False
 
-
 def remote_list():
     command_str=f"LIST"
     hasil = send_command(command_str)
@@ -53,9 +53,9 @@ def remote_get(filename=""):
     hasil = send_command(command_str)
     if (hasil['status']=='OK'):
         #proses file dalam bentuk base64 ke bentuk bytes
-        namafile= hasil['data_namafile']
+        namafile = hasil['data_namafile']
         isifile = base64.b64decode(hasil['data_file'])
-        fp = open(namafile,'wb+')
+        fp = open(namafile, 'wb+')
         fp.write(isifile)
         fp.close()
         return True
@@ -63,9 +63,41 @@ def remote_get(filename=""):
         print("Gagal")
         return False
 
+def remote_upload(filename=""):
+    if not os.path.exists(filename):
+        print(f"File {filename} tidak ditemukan")
+        return False
+        
+    # Read file and convert to base64
+    fp = open(filename, 'rb')
+    isifile = base64.b64encode(fp.read()).decode()
+    fp.close()
+    
+    # Create command with filename and base64 content
+    command_str = f"UPLOAD {filename} {isifile}"
+    
+    hasil = send_command(command_str)
+    if (hasil['status'] == 'OK'):
+        print(f"File {hasil['data_namafile']} berhasil diupload")
+        return True
+    else:
+        print("Gagal")
+        return False
+
+def remote_delete(filename=""):
+    command_str = f"DELETE {filename}"
+    
+    hasil = send_command(command_str)
+    if (hasil['status'] == 'OK'):
+        print(hasil['data'])
+        return True
+    else:
+        print("Gagal")
+        return False
 
 if __name__=='__main__':
-    server_address=('172.16.16.101',6666)
+    server_address=('172.16.16.101', 6666)
     remote_list()
-    remote_get('donalbebek.jpg')
-
+    # remote_get('donalbebek.jpg')
+    # remote_upload('pokijan.jpg')
+    # remote_delete('pokijan.jpg')
